@@ -11,7 +11,7 @@ lex.yy.c: lextemplate.l
 	$(LEX) lextemplate.l
 
 run:
-	@./scanner $(TEST_FILE)
+	./scanner $(TEST_FILE)
 
 clean:
-	@rm lex.yy.c scanner
+	rm lex.yy.c scanner
