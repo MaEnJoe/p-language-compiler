@@ -17,9 +17,8 @@ rm -f $OUTPUT
 for f in $FILES
 do
     $EXEC $f > /tmp/t
-    echo "==========================" >> $OUTPUT
-    echo "file: "$f >> $OUTPUT
     diff /tmp/t $f"_ans" >> $OUTPUT
+    echo "---file:"$f" ends here" >> $OUTPUT
 done
 
 echo "output save in "$OUTPUT
