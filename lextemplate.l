@@ -145,7 +145,7 @@ O   [0-7]
                 printf("%d: %s", linenum, buf);
               linenum++; buf[0] = '\0';
             }
-    \n\r    {
+    \r\n    {
               LIST;
               if (Opt_S)
                 printf("%d: %s", linenum, buf);
