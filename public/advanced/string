@@ -2,7 +2,7 @@
 
 print "aaaaaaa";
 
-print "aaaaaaa""bbbbbbb"; // aaaaaaa"cbbbbbb
+print "aaaaaaa""bbbbbbb"; // aaaaaaa"bbbbbbb
 
 "aaaaa" "bbbbb"
 
