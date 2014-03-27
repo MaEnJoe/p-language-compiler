@@ -19,7 +19,7 @@ Manual
 ------------
 Basically, I’ve finished the requirements of this project, and they are listed below:
 
-**Tokens that will be passed to the parser**
+###Tokens that will be passed to the parser
 - Delimiters: , ; : ( ) [ ]
 - Arithmetic, Relational, and Logical Operators: + - * / mod := < <= <> >= > and or not
 - Keywords: array begin boolean def do else end false for integer if of print read real string then to true return var while
@@ -29,22 +29,22 @@ Basically, I’ve finished the requirements of this project, and they are listed
 - Scientific Notations: (0?|[1-9]{D}\*)(\\.{D}\*)?[eE][-+]?({D}\*)
 - String Constants: \"([^\"]|(\"\"))\*\"
 
-##Tokens That Will Be Discarded
+###Tokens That Will Be Discarded
 - Whitespace: <space> \t \n \r\n
 - Comments: // /\* \*/
 - Pseudocomments: //&S+ //&S- //&T+ //&T-
 
-##Others
+###Others
 - Error Handle
 - Custom String Refination (function removeDoubleQuote in C)
 
 Run
 ------------
-##Run Single Test File
->> make
->> ./scanner <test file>
+###Run Single Test File
+\>\> make
+\>\> ./scanner <test file>
 
-##Run a List of Test File
+###Run a List of Test File
 >> make
 >> vim test.sh ### add the paths in $FILES
 >> ./test.sh
