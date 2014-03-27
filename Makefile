@@ -14,4 +14,4 @@ run:
 	@./scanner $(TEST_FILE)
 
 clean:
-	@rm lex.yy.c scanner $(TEST_RESULT)
+	@rm lex.yy.c scanner $(TEST_RESULT) *.txt
