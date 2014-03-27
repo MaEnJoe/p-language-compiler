@@ -21,7 +21,7 @@ Basically, I’ve finished the requirements of this project, and they are listed
 
 ###Tokens that will be passed to the parser
 - Delimiters: , ; : ( ) [ ]
-- Arithmetic, Relational, and Logical Operators: + - * / mod := < <= <> >= > and or not
+- Arithmetic, Relational, and Logical Operators: + - * / mod := \< \<= \<\> \>= \> and or not
 - Keywords: array begin boolean def do else end false for integer if of print read real string then to true return var while
 - Identifiers: {L}({L}|{D})\*
 - Integer Constants: 0|[1-9]{D}\*, 0{O}+ where O = [0-7]
@@ -30,7 +30,7 @@ Basically, I’ve finished the requirements of this project, and they are listed
 - String Constants: \"([^\"]|(\"\"))\*\"
 
 ###Tokens That Will Be Discarded
-- Whitespace: <space> \t \n \r\n
+- Whitespace: \<space\> \t \n \r\n
 - Comments: // /\* \*/
 - Pseudocomments: //&S+ //&S- //&T+ //&T-
 
@@ -41,11 +41,11 @@ Basically, I’ve finished the requirements of this project, and they are listed
 Run
 ------------
 ###Run Single Test File
-\>\> make
-\>\> ./scanner <test file>
+- \>\> make
+- \>\> ./scanner \<test file\>
 
 ###Run a List of Test File
->> make
->> vim test.sh ### add the paths in $FILES
->> ./test.sh
+- \>\> make
+- \>\> vim test.sh ### add the paths in $FILES
+- \>\> ./test.sh
 
