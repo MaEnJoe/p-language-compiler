@@ -6,37 +6,37 @@
 %{
 
 #include <string.h>
+#include "y.tab.h"
 
-#define LIST strcat( buf, yytext )
-#define token(t) { LIST; if (Opt_T) printf("<%s>\n", #t );}
-#define tokenChar(t) { LIST; if (Opt_T) printf("<%c>\n", t );}
-#define tokenInteger(t, i) { LIST; if (Opt_T) printf("<%s: %d>\n", t, i); }
-#define tokenOctInteger(t, i) { LIST; if (Opt_T) printf("<%s: %s>\n", t, i); }
-#define tokenFloat(t, i) { LIST; if (Opt_T) printf("<%s: %s>\n", t, i ); }
-#define tokenScientific(t, s) { LIST; if ( Opt_T ) printf("<%s: %s>\n", t, s); }
-#define tokenString(t, s) { LIST; if (Opt_T) printf("<%s: %s>\n", t, s); }
-
+#define LIST                    strcat( buf, yytext )
+#define token(t)                { LIST; if (Opt_T) printf("<%s>\n", #t );}
+#define tokenChar(t)            { LIST; if (Opt_T) printf("<%c>\n", t );}
+#define tokenInteger(t, i)      { LIST; if (Opt_T) printf("<%s: %d>\n", t, i); }
+#define tokenOctInteger(t, i)   { LIST; if (Opt_T) printf("<%s: %s>\n", t, i); }
+#define tokenFloat(t, i)        { LIST; if (Opt_T) printf("<%s: %s>\n", t, i); }
+#define tokenScientific(t, s)   { LIST; if (Opt_T) printf("<%s: %s>\n", t, s); }
+#define tokenString(t, s)       { LIST; if (Opt_T) printf("<%s: %s>\n", t, s); }
 
 #define  MAX_LINE_LENG  256
 
-int Opt_S = 1;				/* list source code option */
-int Opt_T = 1;				/* list token option */
-int linenum = 1;			/* line number */
-char buf[MAX_LINE_LENG];		/* source code line buffer */
+int Opt_S = 1;                      /* list source code option */
+int Opt_T = 1;         				/* list token option */
+int linenum = 1;			        /* line number */
+char buf[MAX_LINE_LENG];		    /* source code line buffer */
 char strContent[MAX_LINE_LENG];		/* string buffer */
 
 void setPseudoComment( const char * );	/* pseudo comment option switch */
 %}
 
-whitespace [ \t]+
-letter [A-Za-z]
-digit [0-9]
-integer 0|[1-9][0-9]*
-octal 0[0-7]+
-fraction 0|[0-9]*
-float {integer}"."{fraction}
-scientific ({integer}|{float}|{octal})[Ee][+-]?({integer}|{octal})
-identifier ({letter})({letter}|{digit})*
+whitespace          [ \t]+
+letter              [A-Za-z]
+digit               [0-9]
+integer             0|[1-9][0-9]*
+octal               0[0-7]+
+fraction            0|[0-9]*
+float               {integer}"."{fraction}
+scientific          ({integer}|{float}|{octal})[Ee][+-]?({integer}|{octal})
+identifier          ({letter})({letter}|{digit})*
 
  /* exclusive start conditions */
 %x STR
@@ -45,26 +45,26 @@ identifier ({letter})({letter}|{digit})*
 
 %%
 
-","				{ tokenChar(','); }
-";"				{ tokenChar(';'); }
-":"				{ tokenChar(':'); }
-")"				{ tokenChar(')'); }
-"("				{ tokenChar('('); }
-"["				{ tokenChar('['); }
-"]"				{ tokenChar(']'); }
+","				    { tokenChar(','); }
+";"				    { tokenChar(';'); }
+":"				    { tokenChar(':'); }
+")"				    { tokenChar(')'); }
+"("				    { tokenChar('('); }
+"["				    { tokenChar('['); }
+"]"				    { tokenChar(']'); }
 
-"+"				{ tokenChar('+'); }
-"-"				{ tokenChar('-'); }
-"*"				{ tokenChar('*'); }
-"/"				{ tokenChar('/'); }
+"+"				    { tokenChar('+'); }
+"-"				    { tokenChar('-'); }
+"*"				    { tokenChar('*'); }
+"/"				    { tokenChar('/'); }
 "mod"				{ token(mod); }
 ":="				{ token(:=); }
-"<"				{ tokenChar('<'); }
+"<"				    { tokenChar('<'); }
 "<="				{ token(<=); }
 "<>"				{ token(<>); }
 ">="				{ token(>=); }
-">"				{ tokenChar('>'); }
-"="				{ tokenChar('='); }
+">"				    { tokenChar('>'); }
+"="				    { tokenChar('='); }
 "and"				{ token(and); }
 "or"				{ token(or); }
 "not"				{ token(not); }
@@ -92,146 +92,140 @@ identifier ({letter})({letter}|{digit})*
 "var"				{ token(KWvar); }
 "while"				{ token(KWwhile); }
 
-{octal} { tokenOctInteger("oct_integer",yytext);}
-{identifier}			{ tokenString("id",yytext); }
-{integer}			{ tokenInteger("integer",atoi(yytext)); }
-{float}				{ tokenFloat("float",yytext); }
-{scientific}			{ tokenScientific("scientific", yytext); }
+{octal}             { tokenOctInteger("oct_integer", yytext);}
+{identifier}	    { tokenString("id", yytext); }
+{integer}			{ tokenInteger("integer", atoi(yytext)); }
+{float}				{ tokenFloat("float", yytext); }
+{scientific}	    { tokenScientific("scientific", yytext); }
 
 "\""				{ /* begin string  */
-				  LIST;
-				  BEGIN STR; 
-				}
+                        LIST;
+                        BEGIN STR; 
+                    }
 
-<STR>([^"\n])*			{
-				  LIST;
-				  strcat( strContent, yytext );
-				}
+<STR>([^"\n])*      {
+                        LIST;
+                        strcat( strContent, yytext );
+                    }
 
-<STR>"\""			{ /* end of string or "" */
-				  char c;
-				  c = input();
-				  if( c == '\"' )	/* "" */
-				  {
-					LIST;
-					strcat( buf, "\"" );
-					strcat( strContent, "\"" );
-				  }
-				  else			/* end of string */
-				  {
-					unput(c);
-					strcat(buf,"\"");
-					if (Opt_T)
-						printf("<%s: %s>\n", "string", strContent );
-					memset( strContent, 0, MAX_LINE_LENG );	// clear strContent
-				  	BEGIN INITIAL;
-				  }
-				}
-<STR>"\n"			{
-				  /* error, cancel execution immediately!  */
-				  fprintf( stdout, "error at line %d: string `%s` missing terminating \" character\n", linenum, strContent );
-				  exit(-1);
-				}
+<STR>"\""		    { /* end of string or "" */
+                        char c;
+                        c = input();
+                        if( c == '\"' )	/* "" */
+                        {
+                            LIST;
+                            strcat( buf, "\"" );
+                            strcat( strContent, "\"" );
+                        }
+                        else			/* end of string */
+                        {
+                            unput(c);
+                            strcat(buf,"\"");
+                            if (Opt_T)
+                                printf("<%s: %s>\n", "string", strContent );
+                            memset( strContent, 0, MAX_LINE_LENG );	// clear strContent
+                            BEGIN INITIAL;
+                        }
+                    }
+<STR>"\n"           {
+                        /* error, cancel execution immediately!  */
+                        fprintf( stdout, "error at line %d: string `%s` missing terminating \" character\n", linenum, strContent );
+                        exit(-1);
+                    }
 
-"//&"[A-Z][+-][^\n]*		{ /* pseudo comment */
-				  LIST;
-				  setPseudoComment( yytext );
-				}
+"//&"[A-Z][+-][^\n]* { /* pseudo comment */
+                        LIST;
+                        setPseudoComment( yytext );
+                    }
 "//"				{ /* C++ stype comment */
-				  LIST;
-				  BEGIN COMMENT_CPP;
-				}
+                        LIST;
+                        BEGIN COMMENT_CPP;
+                    }
 
-<COMMENT_CPP>[^\n]+		{
-				  LIST;
-				}
+<COMMENT_CPP>[^\n]+	{
+                        LIST;
+                    }
 
-<COMMENT_CPP>"\n"		{
-				  LIST;
-				  if( Opt_S )
-				  	printf("%d: %s",  linenum,  buf);
-				  linenum++;
-				  memset( buf, 0, MAX_LINE_LENG );
-				  BEGIN INITIAL;
-				}
+<COMMENT_CPP>"\n"	{
+                        LIST;
+                        if(Opt_S)   printf("%d: %s",  linenum,  buf);
+                        linenum++;
+                        memset( buf, 0, MAX_LINE_LENG );
+                        BEGIN INITIAL;
+                    }
 
-"/*"				{ /* C-style comment */
-				  LIST;
-				  BEGIN COMMENT;
-				}
-<COMMENT>"*/"			{
-				  LIST;
-				  BEGIN INITIAL;
-				}
-<COMMENT>"\n"			{
-				  LIST;
-				  if  (Opt_S)
-				  	printf("%d: %s",  linenum,  buf);
-				  linenum++;
-				  memset( buf, 0, MAX_LINE_LENG );
-				}
+"/*"		        { /* C-style comment */
+                        LIST;
+                        BEGIN COMMENT;
+                    }
+<COMMENT>"*/"		{
+                        LIST;
+                        BEGIN INITIAL;
+                    }
+<COMMENT>"\n"		{
+                        LIST;
+                        if (Opt_S)  printf("%d: %s",  linenum,  buf);
+                        linenum++;
+                        memset( buf, 0, MAX_LINE_LENG );
+                    }
 <COMMENT>.			{
-				  LIST;
-				}
+                        LIST;
+                    }
 
-{whitespace}			{ 
-				  LIST; 
+{whitespace}    { 
+                    LIST; 
 				}
 
 \n 				{
-				  LIST;
-				  if  (Opt_S)
-				  	printf("%d: %s",  linenum,  buf);
-				  linenum++;
-				  memset( buf, 0, MAX_LINE_LENG );
+                    LIST;
+                    if (Opt_S)  printf("%d: %s",  linenum,  buf);
+                    linenum++;
+                    memset( buf, 0, MAX_LINE_LENG );
 		   		}
 
 .				{
-				  /* error */
-				  printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
-				  exit(-1);
+                    /* error */
+                    printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
+                    exit(-1);
 				}
 
 %%
 int  main( int argc, char **argv )
 {
-	if( argc != 2 ) {
-		fprintf(  stdout,  "Usage:  ./scanner  [filename]\n"  );
-		exit(0);
-	}
+    if( argc != 2 ) {
+        fprintf(  stdout,  "Usage:  ./scanner  [filename]\n"  );
+        exit(0);
+    }
 
-	FILE *fp = fopen( argv[1], "r" );
-	
-	if( fp == NULL )  {
-		fprintf( stdout, "Open  file  error\n" );
-		exit(-1);
-	}
-	
-	yyin = fp;
-	yylex();
-	exit(0);
+    FILE *fp = fopen( argv[1], "r" );
+
+    if( fp == NULL )  {
+        fprintf( stdout, "Open  file  error\n" );
+        exit(-1);
+    }
+
+    yyin = fp;
+    yylex();
+    exit(0);
 }
 
 void setPseudoComment( const char *text )
 {
-	/* format : //&[A-Z][+-] */
-	switch( text[3] ) {
-	 case 'S':
-		if( text[4] == '+' )
-			Opt_S = 1;
-		else if( text[4] == '-' )
-			Opt_S = 0;
-		break;
-	 case 'T':
-		if( text[4] == '+' )
-			Opt_T = 1;
-		else if( text[4] == '-' )
-			Opt_T = 0;
-	 	break;
-	 default:
-	 	break;
-	}
-
+    /* format : //&[A-Z][+-] */
+    switch( text[3] ) {
+        case 'S':
+            if( text[4] == '+' )
+                Opt_S = 1;
+            else if( text[4] == '-' )
+                Opt_S = 0;
+            break;
+        case 'T':
+            if( text[4] == '+' )
+                Opt_T = 1;
+            else if( text[4] == '-' )
+                Opt_T = 0;
+            break;
+        default:
+            break;
+    }
 }
-
-
