@@ -7,8 +7,8 @@ LEX=lex
 all: lex.yy.c
 	$(CC) -o scanner lex.yy.c $(CFLAGS)
 
-lex.yy.c: lextemplate.l
-	$(LEX) lextemplate.l
+lex.yy.c: lex.l
+	$(LEX) lex.l
 
 run:
 	@./scanner $(TEST_FILE)
