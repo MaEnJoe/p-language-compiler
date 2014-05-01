@@ -45,58 +45,58 @@ identifier          ({letter})({letter}|{digit})*
 
 %%
 
-","				    { tokenChar(','); }
-";"				    { tokenChar(';'); }
-":"				    { tokenChar(':'); }
-")"				    { tokenChar(')'); }
-"("				    { tokenChar('('); }
-"["				    { tokenChar('['); }
-"]"				    { tokenChar(']'); }
+","				    { tokenChar(',');   return COMMA; }
+";"				    { tokenChar(';');   return SEMICOLON; }
+":"				    { tokenChar(':');   return COLON; }
+"("				    { tokenChar('(');   return PARENTHESES1; }
+")"				    { tokenChar(')');   return PARENTHESES2; }
+"["				    { tokenChar('[');   return BRACKET1; }
+"]"				    { tokenChar(']');   return BRACKET2; }
 
-"+"				    { tokenChar('+'); }
-"-"				    { tokenChar('-'); }
-"*"				    { tokenChar('*'); }
-"/"				    { tokenChar('/'); }
-"mod"				{ token(mod); }
-":="				{ token(:=); }
-"<"				    { tokenChar('<'); }
-"<="				{ token(<=); }
-"<>"				{ token(<>); }
-">="				{ token(>=); }
-">"				    { tokenChar('>'); }
-"="				    { tokenChar('='); }
-"and"				{ token(and); }
-"or"				{ token(or); }
-"not"				{ token(not); }
+"+"				    { tokenChar('+');   return PLUS; }
+"-"				    { tokenChar('-');   return MINUS; }
+"*"				    { tokenChar('*');   return MULTIPLY; }
+"/"				    { tokenChar('/');   return DIVIDE; }
+"mod"				{ token(mod);       return MOD; }
+":="				{ token(:=);        return COLONEQUAL; }
+"<"				    { tokenChar('<');   return LESS; }
+"<="				{ token(<=);        return LESSTHAN; }
+"<>"				{ token(<>);        return NEQUAL; }
+">="				{ token(>=);        return LARGERTHAN; }
+">"				    { tokenChar('>');   return LARGER; }
+"="				    { tokenChar('=');   return EQUAL; }
+"and"				{ token(and);       return AND; }
+"or"				{ token(or);        return OR; }
+"not"				{ token(not);       return NOT; }
 
-"array"				{ token(KWarray); }
-"begin"				{ token(KWbegin); }
-"boolean"			{ token(KWboolean); }
-"def"				{ token(KWdef); }
-"do"				{ token(KWdo); }
-"else"				{ token(KWelse); }
-"end"				{ token(KWend); }
-"false"				{ token(KWfalse); }
-"for"				{ token(KWfor); }
-"integer"			{ token(KWinteger); }
-"if"				{ token(KWif); }
-"of"				{ token(KWof); }
-"print"				{ token(KWprint); }
-"read"				{ token(KWread); }
-"real"				{ token(KWreal); }
-"string"			{ token(KWstring); }
-"then"				{ token(KWthen); }
-"to"				{ token(KWto); }
-"true"				{ token(KWtrue); }
-"return"			{ token(KWreturn); }
-"var"				{ token(KWvar); }
-"while"				{ token(KWwhile); }
+"array"				{ token(KWarray);   return KWARRAY; }
+"begin"				{ token(KWbegin);   return KWBEGIN; }
+"boolean"			{ token(KWboolean); return KWBOOLEAN; }
+"def"				{ token(KWdef);     return KWDEF; }
+"do"				{ token(KWdo);      return KWDO; }
+"else"				{ token(KWelse);    return KWELSE; }
+"end"				{ token(KWend);     return KWEND; }
+"false"				{ token(KWfalse);   return KWFALSE; }
+"for"				{ token(KWfor);     return KWFOR; }
+"integer"			{ token(KWinteger); return KWINTEGER; }
+"if"				{ token(KWif);      return KWIF; }
+"of"				{ token(KWof);      return KWOF; }
+"print"				{ token(KWprint);   return KWPRINT; }
+"read"				{ token(KWread);    return KWREAD; }
+"real"				{ token(KWreal);    return KWREAL; }
+"string"			{ token(KWstring);  return KWSTRING; }
+"then"				{ token(KWthen);    return KWTHEN; }
+"to"				{ token(KWto);      return KWTO; }
+"true"				{ token(KWtrue);    return KWTRUE; }
+"return"			{ token(KWreturn);  return KWRETURN; }
+"var"				{ token(KWvar);     return KWVAR; }
+"while"				{ token(KWwhile);   return KWWHILE; }
 
-{octal}             { tokenOctInteger("oct_integer", yytext);}
-{identifier}	    { tokenString("id", yytext); }
-{integer}			{ tokenInteger("integer", atoi(yytext)); }
-{float}				{ tokenFloat("float", yytext); }
-{scientific}	    { tokenScientific("scientific", yytext); }
+{octal}             { tokenOctInteger("oct_integer", yytext);   return OCTAL; }
+{identifier}	    { tokenString("id", yytext);                return IDENT; }
+{integer}			{ tokenInteger("integer", atoi(yytext));    return INT; }
+{float}				{ tokenFloat("float", yytext);              return FLOAT; }
+{scientific}	    { tokenScientific("scientific", yytext);    return SCIENTIFIC; }
 
 "\""				{ /* begin string  */
                         LIST;
@@ -125,6 +125,7 @@ identifier          ({letter})({letter}|{digit})*
                                 printf("<%s: %s>\n", "string", strContent );
                             memset( strContent, 0, MAX_LINE_LENG );	// clear strContent
                             BEGIN INITIAL;
+                            return STRING;
                         }
                     }
 <STR>"\n"           {
