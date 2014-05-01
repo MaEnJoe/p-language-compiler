@@ -18,4 +18,4 @@ run:
 	@./scanner $(TEST_FILE)
 
 clean:
-	@rm lex.yy.c scanner $(TEST_RESULT) *.txt
+	@rm lex.yy.c scanner $(TEST_RESULT) *.txt y.tab.*

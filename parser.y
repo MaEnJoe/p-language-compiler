@@ -23,9 +23,8 @@ programbody         : declaration_vc {;}
 declaration_vc      : declaration_var {;}
                     | declaration_con {;}
 
-declaration_func    : identifier PARENTHESES1 declarations PARENTHESES2 return_val SEMICOLON compound_statement KWEND identifier {;}
-return_val          : epsilon {;}
-                    | COLON type {;}
+declaration_func    : identifier PARENTHESES1 declarations PARENTHESES2 SEMICOLON compound_statement KWEND identifier {;}
+                    | identifier PARENTHESES1 declarations PARENTHESES2 COLON type SEMICOLON compound_statement KWEND identifier {;}
 
 /* statements */
 compound_statement  : KWBEGIN _cs_body KWEND {;}
@@ -40,8 +39,7 @@ declaration_vc_l    : declaration_var_l {;}
 _statement          : epsilon {;}
                     | statement _statement {;}
 statement           : simple_statement {;}
-                    | function_invocation {;}
-                    | procedure_invocation {;}
+                    | procedure_call {;}
                     | cond_statement {;}
                     | while_statement {;}
                     | for_statement {;}
@@ -52,7 +50,7 @@ simple_statement    : variable_reference COLONEQUAL expression SEMICOLON {;}
                     | KWREAD variable_reference SEMICOLON {;}
 
 function_invocation : identifier PARENTHESES1 _expression PARENTHESES2
-procedure_invocation: identifier PARENTHESES1 _expression PARENTHESES2 SEMICOLON {;}
+procedure_call      : identifier PARENTHESES1 _expression PARENTHESES2 SEMICOLON {;}
 
 cond_statement      : KWIF boolean_expression KWTHEN _statement KWELSE _statement KWEND KWIF {;}
                     | KWIF boolean_expression KWTHEN _statement KWEND KWIF {;}
@@ -68,41 +66,54 @@ array_reference     : identifier BRACKET1 integer_expression BRACKET2 _integer_e
 
 _integer_expression : epsilon {;}
                     | BRACKET1 integer_expression BRACKET2 _integer_expression {;}
-integer_expression  : {;} /* FIXME */
+integer_expression  : OCTAL {;}
+                    | INT {;}
+                    | FLOAT {;}
+                    | SCIENTIFIC {;}
 
-_expression         : epsilon {;}
-                    | expression _expression {;}
-expression          : MINUS {;} /* unary, left associativity */
-                    | MULTIPLY {;}
-                    | DIVIDE {;}
-                    | MOD {;}
-                    | PLUS {;}
-                    | MINUS {;}
-                    | LESS {;}
-                    | LESSTHAN {;}
-                    | EQUAL {;}
-                    | LARGERTHAN {;}
-                    | LARGER {;}
-                    | NEQUAL {;}
-                    | NOT {;}
-                    | AND {;}
-                    | OR {;}
+boolean_expression  : KWTRUE {;}
+                    | KWFALSE {;}
+
+_expression         : expression __expression {;}
+__expression        : epsilon {;}
+                    | COMMA expression __expression {;}
+
+expression          : PARENTHESES1 expression PARENTHESES2 {;}
+                    | MINUS expression {;} /* unary, left associativity */
+                    | expression MULTIPLY expression {;}
+                    | expression DIVIDE expression {;}
+                    | expression MOD expression {;}
+                    | expression PLUS expression {;}
+                    | expression MINUS expression {;}
+                    | expression LESS expression {;}
+                    | expression LESSTHAN expression {;}
+                    | expression EQUAL expression {;}
+                    | expression LARGERTHAN expression {;}
+                    | expression LARGER expression {;}
+                    | expression NEQUAL expression {;}
+                    | NOT expression {;}
+                    | expression AND expression {;}
+                    | expression OR expression {;}
+                    | literal_constant {;}
+                    | identifier {;}
+                    | function_invocation {;}
+                    | array_reference {;}
 
 /* data types and declarations */
 declarations        : epsilon {;}
                     | single_declaration SEMICOLON declarations {;}
 single_declaration  : identifier_list COLON type {;}
 
-identifier_list     : identifier _identifier_list {;}
 _identifier_list    : epsilon {;}
                     | COMMA identifier _identifier_list {;}
+identifier_list     : identifier _identifier_list {;}
 
 declaration_var     : KWVAR identifier_list COLON scalar_type {;}
-                    | KWVAR identifier_list COLOR KWARRAY integer_constant KWTO integer_constant KWOF type SEMICOLON {;}
+                    | KWVAR identifier_list COLON KWARRAY integer_constant KWTO integer_constant KWOF type SEMICOLON {;}
 declaration_con     : KWVAR identifier_list COLON literal_constant SEMICOLON {;}
 
 declaration_var_l   : KWVAR identifier_list COLON scalar_type {;}
-                    | KWVAR identifier_list COLOR KWARRAY integer_constant KWTO integer_constant KWOF type SEMICOLON {;}
+                    | KWVAR identifier_list COLON KWARRAY integer_constant KWTO integer_constant KWOF type SEMICOLON {;}
 declaration_con_l   : KWVAR identifier_list COLON literal_constant SEMICOLON {;}
 
 integer_constant    : INT { /*int >= 0*/;}
@@ -113,6 +124,10 @@ literal_constant    : OCTAL {;}
                     | STRING {;}
                     | KWTRUE {;}
                     | KWFALSE {;}
+
+scalar_type         : KWINTEGER {;}
+                    | KWREAL {;}
+                    | KWBOOLEAN {;}
 
 type                : KWBOOLEAN {;}
                     | KWFALSE {;}
