@@ -11,6 +11,12 @@ extern char buf[256];           /* declared in lex.l */
 %token COMMA SEMICOLON COLON PARENTHESES1 PARENTHESES2 BRACKET1 BRACKET2 PLUS MINUS MULTIPLY DIVIDE MOD COLONEQUAL LESS LESSTHAN NEQUAL LARGERTHAN LARGER EQUAL AND OR NOT IDENT
 KWARRAY KWBEGIN KWBOOLEAN KWDEF KWDO KWELSE KWEND KWFALSE KWFOR KWINTEGER KWIF KWOF KWPRINT KWREAD KWREAL KWSTRING KWTHEN KWTO KWTRUE KWRETURN KWVAR KWWHILE OCTAL INT FLOAT SCIENTIFIC STRING
 
+%left MULTIPLY DIVIDE MOD
+%left PLUS MINUS
+%left LESS LESSTHAN EQUAL LARGERTHAN LARGER NEQUAL
+%left NOT
+%left AND
+%left OR
 %%
 
 program             : programname SEMICOLON _programbody KWEND IDENT {;}
@@ -79,7 +85,7 @@ __expression        : epsilon {;}
                     | COMMA expression __expression {;}
 
 expression          : PARENTHESES1 expression PARENTHESES2 {;}
-                    | MINUS expression {;} /* unary, left associativity */
+                    | MINUS expression %prec MULTIPLY {;} /* unary, left associativity */
                     | expression MULTIPLY expression {;}
                     | expression DIVIDE expression {;}
                     | expression MOD expression {;}
