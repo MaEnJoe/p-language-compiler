@@ -2,3 +2,4 @@ lex.yy.c
 scanner
 y.output
 y.tab.*
+a.out

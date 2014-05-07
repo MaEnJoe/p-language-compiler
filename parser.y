@@ -8,8 +8,9 @@ extern char *yytext;            /* declared by lex */
 extern char buf[256];           /* declared in lex.l */
 %}
 
-%token COMMA SEMICOLON COLON PARENTHESES1 PARENTHESES2 BRACKET1 BRACKET2 PLUS MINUS MULTIPLY DIVIDE MOD COLONEQUAL LESS LESSTHAN NEQUAL LARGERTHAN LARGER EQUAL AND OR NOT IDENT
-KWARRAY KWBEGIN KWBOOLEAN KWDEF KWDO KWELSE KWEND KWFALSE KWFOR KWINTEGER KWIF KWOF KWPRINT KWREAD KWREAL KWSTRING KWTHEN KWTO KWTRUE KWRETURN KWVAR KWWHILE OCTAL INT FLOAT SCIENTIFIC STRING
+%token COMMA SEMICOLON COLON PARENTHESES1 PARENTHESES2 BRACKET1 BRACKET2 PLUS MINUS MULTIPLY DIVIDE MOD COLONEQUAL LESS LESSTHAN NEQUAL LARGERTHAN LARGER EQUAL AND OR NOT IDENT KWARRAY KWBEGIN KWBOOLEAN KWDEF KWDO KWELSE KWEND KWFALSE KWFOR KWINTEGER KWIF KWOF KWPRINT KWREAD KWREAL KWSTRING KWTHEN KWTO KWTRUE KWRETURN KWVAR KWWHILE OCTAL INT FLOAT SCIENTIFIC STRING
+
+%start program
 
 %left MULTIPLY DIVIDE MOD
 %left PLUS MINUS
@@ -19,49 +20,49 @@ KWARRAY KWBEGIN KWBOOLEAN KWDEF KWDO KWELSE KWEND KWFALSE KWFOR KWINTEGER KWIF K
 %left OR
 %%
 
-program             : programname SEMICOLON _programbody KWEND IDENT {;}
-_programbody        : epsilon {;}
-                    | programbody _programbody {;}
-programbody         : declaration_vc {;}
-                    | declaration_func  {;}
-                    | compound_statement {;}
+program             : programname SEMICOLON programbody KWEND IDENT {;}
+programbody         : _declaration_vc _declaration_func _statement
 
+_declaration_vc     : epsilon {;}
+                    | declaration_vc _declaration_vc {;}
 declaration_vc      : declaration_var {;}
                     | declaration_con {;}
 
-declaration_func    : identifier PARENTHESES1 declarations PARENTHESES2 SEMICOLON compound_statement KWEND identifier {;}
-                    | identifier PARENTHESES1 declarations PARENTHESES2 COLON type SEMICOLON compound_statement KWEND identifier {;}
+_declaration_func   : epsilon {;}
+                    | declaration_func _declaration_func {;}
+declaration_func    : identifier PARENTHESES1 _arguments PARENTHESES2 SEMICOLON compound_statement KWEND identifier { printf("declaration_func 1\n"); }
+                    | identifier PARENTHESES1 _arguments PARENTHESES2 COLON type SEMICOLON compound_statement KWEND identifier { printf("declaration_func 2\n"); }
 
 /* statements */
-compound_statement  : KWBEGIN _cs_body KWEND {;}
-_cs_body            : epsilon {;}
-                    | cs_body _cs_body {;}
-cs_body             : declaration_vc_l {;}
-                    | statement {;}
+compound_statement  : KWBEGIN _declaration_vc_l _statement KWEND { printf("compount statement\n"); }
 
+_declaration_vc_l   : epsilon {;}
+                    | declaration_vc_l _declaration_vc_l {;}
 declaration_vc_l    : declaration_var_l {;}
                     | declaration_con_l {;}
 
 _statement          : epsilon {;}
                     | statement _statement {;}
-statement           : simple_statement {;}
-                    | procedure_call {;}
+statement           : compound_statement {;}
+                    | simple_statement {;}
                     | cond_statement {;}
                     | while_statement {;}
                     | for_statement {;}
                     | return_statement {;}
+                    | procedure_call {;}
 
 simple_statement    : variable_reference COLONEQUAL expression SEMICOLON {;}
-                    | KWPRINT variable_reference SEMICOLON OR KWPRINT expression SEMICOLON {;}
+                    | KWPRINT variable_reference SEMICOLON {;}
+                    | KWPRINT expression SEMICOLON {;}
                     | KWREAD variable_reference SEMICOLON {;}
 
-function_invocation : identifier PARENTHESES1 _expression PARENTHESES2
+function_invocation : identifier PARENTHESES1 _expression PARENTHESES2 {;}
 procedure_call      : identifier PARENTHESES1 _expression PARENTHESES2 SEMICOLON {;}
 
-cond_statement      : KWIF boolean_expression KWTHEN _statement KWELSE _statement KWEND KWIF {;}
-                    | KWIF boolean_expression KWTHEN _statement KWEND KWIF {;}
+cond_statement      : KWIF expression KWTHEN _statement KWELSE _statement KWEND KWIF {;}
+                    | KWIF expression KWTHEN _statement KWEND KWIF {;}
 
-while_statement     : KWWHILE boolean_expression KWDO _statement KWEND KWDO {;}
+while_statement     : KWWHILE expression KWDO _statement KWEND KWDO {;}
 for_statement       : KWFOR identifier COLONEQUAL integer_constant KWTO integer_constant KWDO _statement KWEND KWDO {;}
 return_statement    : KWRETURN expression SEMICOLON {;}
 
@@ -77,10 +78,8 @@ integer_expression  : OCTAL {;}
                     | FLOAT {;}
                     | SCIENTIFIC {;}
 
-boolean_expression  : KWTRUE {;}
-                    | KWFALSE {;}
-
-_expression         : expression __expression {;}
+_expression         : epsilon {;}
+                    | expression __expression {;}
 __expression        : epsilon {;}
                     | COMMA expression __expression {;}
 
@@ -106,19 +105,21 @@ expression          : PARENTHESES1 expression PARENTHESES2 {;}
                     | array_reference {;}
 
 /* data types and declarations */
-declarations        : epsilon {;}
-                    | single_declaration SEMICOLON declarations {;}
-single_declaration  : identifier_list COLON type {;}
+__arguments         : epsilon {;}
+                    | SEMICOLON arguments __arguments {;}
+_arguments          : epsilon {;}
+                    | arguments __arguments {;}
+arguments           : identifier_list COLON type {;}
 
 _identifier_list    : epsilon {;}
                     | COMMA identifier _identifier_list {;}
 identifier_list     : identifier _identifier_list {;}
 
-declaration_var     : KWVAR identifier_list COLON scalar_type {;}
+declaration_var     : KWVAR identifier_list COLON scalar_type SEMICOLON {;}
                     | KWVAR identifier_list COLON KWARRAY integer_constant KWTO integer_constant KWOF type SEMICOLON {;}
 declaration_con     : KWVAR identifier_list COLON literal_constant SEMICOLON {;}
 
-declaration_var_l   : KWVAR identifier_list COLON scalar_type {;}
+declaration_var_l   : KWVAR identifier_list COLON scalar_type SEMICOLON {;}
                     | KWVAR identifier_list COLON KWARRAY integer_constant KWTO integer_constant KWOF type SEMICOLON {;}
 declaration_con_l   : KWVAR identifier_list COLON literal_constant SEMICOLON {;}
 
@@ -134,26 +135,25 @@ literal_constant    : OCTAL {;}
 scalar_type         : KWINTEGER {;}
                     | KWREAL {;}
                     | KWBOOLEAN {;}
-
-type                : KWBOOLEAN {;}
-                    | KWFALSE {;}
-                    | KWINTEGER {;}
                     | KWSTRING {;}
 
-programname	        : identifier ;
+type                : scalar_type {;}
+                    | KWARRAY integer_constant KWTO integer_constant KWOF type {;}
+
+programname	        : identifier {;}
 identifier          : IDENT ;
-epsilon: ;
+epsilon:            ;
 
 %%
 
 int yyerror( char *msg )
 {
-        fprintf( stderr, "\n|--------------------------------------------------------------------------\n" );
+    fprintf( stderr, "\n|--------------------------------------------------------------------------\n" );
 	fprintf( stderr, "| Error found in Line #%d: %s\n", linenum, buf );
 	fprintf( stderr, "|\n" );
 	fprintf( stderr, "| Unmatched token: %s\n", yytext );
-        fprintf( stderr, "|--------------------------------------------------------------------------\n" );
-        exit(-1);
+    fprintf( stderr, "|--------------------------------------------------------------------------\n" );
+    exit(-1);
 }
 
 int  main( int argc, char **argv )

@@ -1,17 +1,17 @@
 #!/bin/bash
 EXEC="./scanner"
 OUTPUT="out.txt"
-FILES="public/advanced/string
-public/digit/float
-public/general/general_2
-public/basic/keyword
-public/error_case/error
-public/basic/delim
-public/digit/integer
-public/basic/op
-public/general/general_1
-public/basic/identifier
-public/digit/scientific"
+FILES="input_lex/advanced/string
+input_lex/digit/float
+input_lex/general/general_2
+input_lex/basic/keyword
+input_lex/error_case/error
+input_lex/basic/delim
+input_lex/digit/integer
+input_lex/basic/op
+input_lex/general/general_1
+input_lex/basic/identifier
+input_lex/digit/scientific"
 
 COUNT=0
 
