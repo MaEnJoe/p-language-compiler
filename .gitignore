@@ -6,3 +6,4 @@ a.out
 *.log
 *.aux
 result
+parser
