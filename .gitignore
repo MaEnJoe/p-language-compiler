@@ -3,3 +3,5 @@ scanner
 y.output
 y.tab.*
 a.out
+*.log
+*.aux
