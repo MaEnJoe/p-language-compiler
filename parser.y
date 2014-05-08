@@ -12,16 +12,17 @@ extern char buf[256];           /* declared in lex.l */
 
 %start program
 
-%left MULTIPLY DIVIDE MOD
-%left PLUS MINUS
-%left LESS LESSTHAN EQUAL LARGERTHAN LARGER NEQUAL
-%left NOT
-%left AND
 %left OR
+%left AND
+%left NOT
+%left EQUAL 
+%left LESS LESSTHAN LARGERTHAN LARGER NEQUAL
+%left PLUS MINUS
+%left MULTIPLY DIVIDE MOD
 %%
 
 program             : programname SEMICOLON programbody KWEND IDENT {;}
-programbody         : _declaration_vc _declaration_func _statement
+programbody         : _declaration_vc _declaration_func compound_statement {;}
 
 _declaration_vc     : epsilon {;}
                     | declaration_vc _declaration_vc {;}
@@ -30,11 +31,11 @@ declaration_vc      : declaration_var {;}
 
 _declaration_func   : epsilon {;}
                     | declaration_func _declaration_func {;}
-declaration_func    : identifier PARENTHESES1 _arguments PARENTHESES2 SEMICOLON compound_statement KWEND identifier { printf("declaration_func 1\n"); }
-                    | identifier PARENTHESES1 _arguments PARENTHESES2 COLON type SEMICOLON compound_statement KWEND identifier { printf("declaration_func 2\n"); }
+declaration_func    : identifier PARENTHESES1 _arguments PARENTHESES2 SEMICOLON compound_statement KWEND identifier {;}
+                    | identifier PARENTHESES1 _arguments PARENTHESES2 COLON type SEMICOLON compound_statement KWEND identifier {;}
 
 /* statements */
-compound_statement  : KWBEGIN _declaration_vc_l _statement KWEND { printf("compount statement\n"); }
+compound_statement  : KWBEGIN _declaration_vc_l _statement KWEND {;}
 
 _declaration_vc_l   : epsilon {;}
                     | declaration_vc_l _declaration_vc_l {;}
@@ -52,7 +53,6 @@ statement           : compound_statement {;}
                     | procedure_call {;}
 
 simple_statement    : variable_reference COLONEQUAL expression SEMICOLON {;}
-                    | KWPRINT variable_reference SEMICOLON {;}
                     | KWPRINT expression SEMICOLON {;}
                     | KWREAD variable_reference SEMICOLON {;}
 
@@ -100,9 +100,8 @@ expression          : PARENTHESES1 expression PARENTHESES2 {;}
                     | expression AND expression {;}
                     | expression OR expression {;}
                     | literal_constant {;}
-                    | identifier {;}
                     | function_invocation {;}
-                    | array_reference {;}
+                    | variable_reference {;}
 
 /* data types and declarations */
 __arguments         : epsilon {;}
@@ -124,8 +123,9 @@ declaration_var_l   : KWVAR identifier_list COLON scalar_type SEMICOLON {;}
 declaration_con_l   : KWVAR identifier_list COLON literal_constant SEMICOLON {;}
 
 integer_constant    : INT { /*int >= 0*/;}
-literal_constant    : OCTAL {;}
-                    | INT {;}
+                    | OCTAL {;}
+literal_constant    : INT {;}
+                    | OCTAL {;}
                     | FLOAT {;}
                     | SCIENTIFIC {;}
                     | STRING {;}

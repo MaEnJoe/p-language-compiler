@@ -30,7 +30,6 @@
 29:         var L2darray: array 1 to 5 of array 1 to 3 of integer;  // two dimensional
 30: 
 31: 
-compount statement
 32: end
 33: end decl
 
@@ -80,7 +79,6 @@ compount statement
 17:                 print "test";
 18:         end if
 19: 
-compount statement
 20: end
 21: end expr1
 
@@ -98,17 +96,13 @@ compount statement
 9:         var s: string;
 10:         read s;         // simple statement
 11:         print s;        // simple statement
-compount statement
 12: end
-declaration_func 1
 13: end echo
 14: 
 15: funny(): boolean;
 16: begin
 17:         return 1<>1;    // return statement
-compount statement
 18: end 
-declaration_func 2
 19: end funny
 20: 
 21: 
@@ -125,7 +119,6 @@ declaration_func 2
 32:         begin
 33:                 var c: boolean;
 34:                 c := a < b;
-compount statement
 35:         end
 36:         
 37:         // condition statement
@@ -151,7 +144,6 @@ compount statement
 57:         // function invocation statement 
 58:         echo();
 59: 
-compount statement
 60: end
 61: end statement
 
@@ -169,9 +161,7 @@ compount statement
 9: foo( a, b: integer ): integer;
 10: begin
 11: 	return a*b;
-compount statement
 12: end
-declaration_func 2
 13: end foo
 14: 
 15: // main block
@@ -179,7 +169,6 @@ declaration_func 2
 17: 
 18: 	print foo(2*4,3);
 19: 
-compount statement
 20: end
 21: end test
 
