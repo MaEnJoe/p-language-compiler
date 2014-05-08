@@ -1,6 +1,8 @@
 Compiler - Simple Scanner in lex
 ==============
 
+** Project #2 Report Locates at: report/report.pdf **
+
 Author
 --------------
 0016302 楊翔宇
