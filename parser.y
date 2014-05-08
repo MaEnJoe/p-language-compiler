@@ -73,10 +73,7 @@ array_reference     : identifier BRACKET1 integer_expression BRACKET2 _integer_e
 
 _integer_expression : epsilon {;}
                     | BRACKET1 integer_expression BRACKET2 _integer_expression {;}
-integer_expression  : OCTAL {;}
-                    | INT {;}
-                    | FLOAT {;}
-                    | SCIENTIFIC {;}
+integer_expression  : expression {;}
 
 _expression         : epsilon {;}
                     | expression __expression {;}
